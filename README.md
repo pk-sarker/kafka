@@ -1,5 +1,7 @@
 # Kafka
 
+ Apache Kafka provides the messaging infrastructure of these and many more massive software as a service applications we use every day
+ 
 ## Start Zookeeper
 `$ ./bin/zookeeper-server-start.sh config/zookeeper.properties`
 
@@ -67,3 +69,10 @@ Topic: test_rep_topic   Partition: 0        Leader: 1           Replicas: 1,2,3,
 ```
 According to the output node/server **1** is the leader. If there are more partitions then there would have been more rows.
 
+## Create Producer/Consumer that publishes/consumes message to/from multiple brokers
+
+```
+$ ./bin/kafka-console-producer.sh --broker-list localhost:9093 localhost:9095 --topic test_topic_123
+
+$ ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9093 localhost:9095 localhost:9094 --topic test_topic_123 --from-beginning 
+```

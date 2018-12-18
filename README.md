@@ -76,3 +76,30 @@ $ ./bin/kafka-console-producer.sh --broker-list localhost:9093 localhost:9095 --
 
 $ ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9093 localhost:9095 localhost:9094 --topic test_topic_123 --from-beginning 
 ```
+
+## Producer/Consumer using Java
+I have created a simple maven project with following dependencies 
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.pks.kafka</groupId>
+    <artifactId>learning</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+    </dependencies>
+
+</project>
+```
+Then created a package name `com.pks.kafka`.
+

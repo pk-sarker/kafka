@@ -101,5 +101,59 @@ I have created a simple maven project with following dependencies
 
 </project>
 ```
-Then created a package name `com.pks.kafka`.
+Then created a package name `com.pks.kafka`. 
+
+Before creating the producer you need to make sure your brockers are running. In the following example i have used four brockers (`localhost:9093`, `localhost:9094`, `localhost:9095` and `localhost:9096`). Also created a consumer that will consume messages from `localhost:9093`, `localhost:9095` and `localhost:9094` 
+```
+$ ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9093 localhost:9095 localhost:9094 --topic test_topic_123 
+
+```
+Here is the sample of a producer app:
+
+```
+package com.pks.kafka;
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+
+import java.util.Properties;
+
+public class KafkaProducerApp {
+
+    public static void main(String args[]) {
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "localhost:9093, localhost:9094, localhost:9095, localhost:9096");
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+        KafkaProducer kafkaProducer = new KafkaProducer(props);
+
+        try{
+            for(int i = 0; i < 10; i++){
+                kafkaProducer.send(new ProducerRecord("test_topic_123", "Example-1001", "Message - " + i ));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            kafkaProducer.close();
+        }
+    }
+}
+```
+
+Output in Consumer terminal after running the producer code:
+```
+Message - 0
+Message - 1
+Message - 2
+Message - 3
+Message - 4
+Message - 5
+Message - 6
+Message - 7
+Message - 8
+Message - 9
+```
+
+
 

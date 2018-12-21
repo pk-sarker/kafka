@@ -1,0 +1,63 @@
+package com.pks.kafka;
+
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+
+import org.apache.kafka.common.serialization.LongDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+
+import java.util.Collections;
+import java.util.Properties;
+
+public class KafkaConsumerApp {
+
+    private final static String TOPIC = "test_topic_123";
+    private final static String BOOTSTRAP_SERVERS = "localhost:9093,localhost:9094,localhost:9095,localhost:9096";
+
+
+    private static Consumer<Long, String> createConsumer() {
+
+        final Properties props = new Properties();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "KafkaConsumerApp");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100);
+
+        // Create the consumer using props.
+        final Consumer<Long, String> consumer = new KafkaConsumer<>(props);
+
+        // Subscribe to the topic.
+        consumer.subscribe(Collections.singletonList(TOPIC));
+        return consumer;
+    }
+
+
+    static void runConsumer() throws InterruptedException {
+        final Consumer<Long, String> consumer = createConsumer();
+        final int giveUp = 100;   int noRecordsCount = 0;
+        while (true) {
+            final ConsumerRecords<Long, String> consumerRecords =
+                    consumer.poll(1000);
+            if (consumerRecords.count()==0) {
+                noRecordsCount++;
+                if (noRecordsCount > giveUp) break;
+                else continue;
+            }
+            consumerRecords.forEach(record -> {
+                System.out.printf("Consumer Record:(%d, %s, %d, %d)\n",
+                        record.key(), record.value(),
+                        record.partition(), record.offset());
+            });
+            consumer.commitAsync();
+        }
+        consumer.close();
+        System.out.println("DONE");
+    }
+
+    public static void main(String args[]) throws Exception {
+        runConsumer();
+    }
+
+}
